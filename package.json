@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/n0bisuke/connpass_updater/issues"
   },
-  "homepage": "https://github.com/n0bisuke/connpass_updater#readme"
+  "homepage": "https://github.com/n0bisuke/connpass_updater#readme",
+  "dependencies": {
+    "puppeteer": "^24.9.0"
+  }
 }
