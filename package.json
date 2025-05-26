@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "start": "node app.mjs",
     "test": "echo \"Error: no test specified\" && exit 1",
     "install:chrome": "node node_modules/puppeteer/install.mjs",
     "deploy": "git add . && git commit -m 'update' && git push"
