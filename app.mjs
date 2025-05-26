@@ -6,7 +6,7 @@ import puppeteer from 'puppeteer';
 
 const browser = await puppeteer.launch({
   headless: true,
-  executablePath: '/Applications/Brave Browser.app/Contents/MacOS/Brave Browser', // Brave用のパス
+  // executablePath: '/Applications/Brave Browser.app/Contents/MacOS/Brave Browser', // Brave用のパス
   args: [
     '--no-sandbox',
     '--disable-setuid-sandbox',
