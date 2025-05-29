@@ -18,7 +18,7 @@ try {
   const page = await browser.newPage();
   
   console.log('Navigating to example.com...');
-  await page.goto('https://x.com/n0bisuke');
+  await page.goto('https://qiita.com/n0bisuke/items/1fa5096ed70a2c6e9889');
   
   const title = await page.title();
   console.log('Page title:', title);
