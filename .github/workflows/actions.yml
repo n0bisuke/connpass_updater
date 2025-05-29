@@ -7,9 +7,13 @@ on:
     - cron:  '0 */8 * * *'
 
 jobs:
-  lint:
+  run-parallel:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        type: [1, 0]
+      max-parallel: 2
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,20 +28,15 @@ jobs:
         with:
           version: 9
           
-      # Chromiumの依存関係をインストール
       - name: Install Chromium dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
             libnss3-dev \
             libatk-bridge2.0-dev \
             libdrm-dev \
             libxkbcommon-dev \
-            libxcomposite-dev \
-            libxdamage-dev \
-            libxrandr-dev \
             libgbm-dev \
-            libxss-dev \
             libasound2-dev
             
       - name: chromium
@@ -46,12 +45,7 @@ jobs:
       - name: Dependency installing
         run: pnpm i
         
-      - name: Run TYPE=1
-        run: TYPEID=1 npm start
-        env:
-          PUPPETEER_ARGS: "--no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage"
-          
-      - name: Run TYPE=0
-        run: TYPEID=0 npm start
+      - name: Run TYPE=${{ matrix.type }}
+        run: TYPEID=${{ matrix.type }} npm start
         env:
           PUPPETEER_ARGS: "--no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage"
