@@ -7,9 +7,8 @@ on:
     - cron:  '0 */8 * * *'
 
 jobs:
-  lint:
+  setup:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,8 +36,49 @@ jobs:
       - name: Dependency installing
         run: pnpm i
         
-      - name: Run TYPE=1
-        run: TYPEID=1 npm start
-        
-      - name: Run TYPE=0
-        run: TYPEID=0 npm start
+      # セットアップ完了後、workspace全体をアーティファクトとして保存
+      - name: Upload workspace
+        uses: actions/upload-artifact@v4
+        with:
+          name: workspace
+          path: |
+            .
+            ~/.cache/puppeteer
+          retention-days: 1
+
+  run-tasks:
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        type: [1, 0]
+      max-parallel: 2
+      
+    steps:
+      - name: Download workspace
+        uses: actions/download-artifact@v4
+        with:
+          name: workspace
+          path: .
+          
+      - name: Restore Puppeteer cache
+        run: |
+          if [ -d "home/runner/.cache/puppeteer" ]; then
+            sudo mkdir -p /home/runner/.cache
+            sudo cp -r home/runner/.cache/puppeteer /home/runner/.cache/
+          fi
+          
+      - name: Set up Node 24 (minimal)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          
+      - name: Install pnpm (minimal)
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          
+      - name: Run TYPE=${{ matrix.type }}
+        run: TYPEID=${{ matrix.type }} npm start
+        env:
+          PUPPETEER_ARGS: "--no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage"
