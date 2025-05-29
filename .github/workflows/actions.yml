@@ -24,17 +24,8 @@ jobs:
         with:
           version: 9
           
-      # システム依存関係のキャッシュ
-      - name: Cache system dependencies
-        id: cache-system-deps
-        uses: actions/cache@v4
-        with:
-          path: /var/cache/apt
-          key: system-deps-${{ runner.os }}-${{ hashFiles('.github/workflows/**') }}
-          
-      # Chromiumの依存関係をインストール（キャッシュがない場合のみ）
+      # Chromiumの依存関係をインストール
       - name: Install Chromium dependencies
-        if: steps.cache-system-deps.outputs.cache-hit != 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -49,17 +40,8 @@ jobs:
             libxss-dev \
             libasound2-dev
             
-      - name: Debug - Check cache key
-        run: |
-          echo "Puppeteer version: $(node -p "require('./package.json').dependencies.puppeteer || require('./package.json').devDependencies.puppeteer || ''")"
-          
       - name: chromium
         uses: ./.github/actions/chrome
-        
-      - name: Debug - Check if cache was hit
-        run: |
-          echo "Cache directory exists: $(ls -la /home/runner/.cache/puppeteer/ 2>/dev/null || echo 'No')"
-          echo "Chrome binary exists: $(find /home/runner/.cache/puppeteer/ -name "chrome" -type f 2>/dev/null || echo 'No')"
         
       - name: Dependency installing
         run: pnpm i
