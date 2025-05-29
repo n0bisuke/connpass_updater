@@ -13,6 +13,7 @@ const browser = await puppeteer.launch({
     '--disable-dev-shm-usage'
   ]
 });
+
 try {
   const page = await browser.newPage();
   
